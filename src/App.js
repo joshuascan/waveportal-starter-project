@@ -5,10 +5,45 @@ import { abi } from "./utils/WavePortal.json";
 
 export default function App() {
   const [currentAccount, setCurrentAccount] = useState("");
+  const [allWaves, setAllWaves] = useState([]);
+  const [messageValue, setMessageValue] = useState("");
   const [totalWaves, setTotalWaves] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
-  const contractAddress = "0x96C889990caA3cd65F3f5811F5cE644a25405074";
+  const contractAddress = "0x16Acf1043D0399b215C6126c4111d4ff5f685285";
   const contractABI = abi;
+
+  const getAllWaves = async () => {
+    try {
+      const { ethereum } = window;
+      if (ethereum) {
+        const provider = new ethers.providers.Web3Provider(ethereum);
+        const signer = provider.getSigner();
+        const wavePortalContract = new ethers.Contract(
+          contractAddress,
+          contractABI,
+          signer
+        );
+
+        const waves = await wavePortalContract.getAllWaves();
+
+        let wavesCleaned = [];
+        waves.forEach((wave) => {
+          wavesCleaned.push({
+            address: wave.waver,
+            timestamp: new Date(wave.timestamp * 1000),
+            message: wave.message,
+          });
+        });
+
+        setAllWaves(wavesCleaned);
+        setTotalWaves(wavesCleaned.length);
+      } else {
+        console.log("Ethereum object doesn't exist!");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const checkIfWalletIsConnected = async () => {
     try {
@@ -26,6 +61,7 @@ export default function App() {
         const account = accounts[0];
         console.log("Found an authorized account: ", account);
         setCurrentAccount(account);
+        getAllWaves();
       } else {
         console.log("No authorized account found");
       }
@@ -70,17 +106,19 @@ export default function App() {
         let count = await wavePortalContract.getTotalWaves();
         console.log("Retrieved total wave count...", count.toNumber());
 
-        const waveTxn = await wavePortalContract.wave();
+        const waveTxn = await wavePortalContract.wave(messageValue);
         console.log("Mining...", waveTxn.hash);
         setIsLoading(true);
 
         await waveTxn.wait();
         console.log("Mined -- ", waveTxn.hash);
         setIsLoading(false);
+        setMessageValue("");
 
-        count = await wavePortalContract.getTotalWaves();
-        setTotalWaves(count.toNumber());
-        console.log("Retrieved total wave count...", count.toNumber());
+        getAllWaves();
+        // count = await wavePortalContract.getTotalWaves();
+        // setTotalWaves(count.toNumber());
+        // console.log("Retrieved total wave count...", count.toNumber());
       } else {
         console.log("Ethereum object doesn't exist!");
       }
@@ -91,7 +129,12 @@ export default function App() {
 
   useEffect(() => {
     checkIfWalletIsConnected();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const handleMessageChange = (event) => {
+    setMessageValue(event.target.value);
+  };
 
   return (
     <div className="mainContainer">
@@ -106,6 +149,13 @@ export default function App() {
         <div className="bio">Connect your Ethereum wallet and wave at me!</div>
         <div className="waveCount">{totalWaves} total waves!</div>
 
+        <input
+          name="message"
+          value={messageValue}
+          onChange={handleMessageChange}
+          placeholder="Write your message..."
+          disabled={isLoading}
+        />
         <button className="waveButton" onClick={wave}>
           Wave at Me
         </button>
@@ -117,6 +167,16 @@ export default function App() {
             Connect Wallet
           </button>
         )}
+
+        {allWaves.map((wave, index) => {
+          return (
+            <div key={index} className="wave">
+              <div>Address: {wave.address}</div>
+              <div>Time: {wave.timestamp.toString()}</div>
+              <div>Message: {wave.message}</div>
+            </div>
+          );
+        })}
       </div>
     </div>
   );
