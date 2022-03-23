@@ -24,11 +24,28 @@
   margin-top: 16px;
 }
 
+.waveCount {
+  text-align: center;
+  color: gray;
+  margin-top: 16px;
+  font-weight: bold;
+  font-style: italic;
+  font-size: 24px;
+}
+
 .waveButton {
   cursor: pointer;
   margin-top: 16px;
   padding: 8px;
   border: 0;
   border-radius: 5px;
-  
+}
+
+.loading {
+  text-align: center;
+  color: rgb(39, 39, 39);
+  margin-top: 16px;
+  font-weight: bold;
+  font-style: italic;
+  font-size: 20px;
 }
