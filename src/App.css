@@ -58,6 +58,15 @@ button:active {
   background-color: rgb(41, 41, 73);
 }
 
+.connectButton {
+  margin-top: 30px;
+  width: 70%;
+}
+
+a {
+  color: rgb(79, 173, 250);
+}
+
 .loading {
   text-align: center;
   margin-top: 16px;

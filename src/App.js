@@ -116,6 +116,7 @@ export default function App() {
 
       console.log("Connected ", accounts[0]);
       setCurrentAccount(accounts[0]);
+      getAllWaves();
     } catch (error) {
       console.log(error);
     }
@@ -175,46 +176,55 @@ export default function App() {
         </div>
 
         <div className="bio">Connect your Ethereum wallet and wave at me!</div>
-        <div className="waveCount">{totalWaves} total waves!</div>
 
-        <input
-          name="message"
-          className="messageInput"
-          value={messageValue}
-          onChange={handleMessageChange}
-          placeholder="Write your message..."
-          disabled={isLoading}
-        />
-        <button className="waveButton" onClick={wave} disabled={isLoading}>
-          Wave at Me
-        </button>
-
-        {isLoading && <div className="loading">Loading...</div>}
-
-        {!currentAccount && (
-          <button className="waveButton" onClick={connectWallet}>
+        {!currentAccount ? (
+          <button className="connectButton" onClick={connectWallet}>
             Connect Wallet
           </button>
-        )}
+        ) : (
+          <div className="dataContainer">
+            <div className="waveCount">{totalWaves} total waves!</div>
+            <input
+              name="message"
+              className="messageInput"
+              value={messageValue}
+              onChange={handleMessageChange}
+              placeholder="Write your message..."
+              disabled={isLoading}
+            />
+            <button className="waveButton" onClick={wave} disabled={isLoading}>
+              Wave at Me
+            </button>
 
-        {allWaves
-          .sort((a, b) => b.timestamp - a.timestamp)
-          .map((wave, index) => {
-            return (
-              <div key={index} className="waveContainer">
-                <div>
-                  <span className="bold">Message:</span> {wave.message}
-                </div>
-                <div>
-                  <span className="bold">From:</span> {wave.address}
-                </div>
-                <div>
-                  <span className="bold">Time:</span>{" "}
-                  {wave.timestamp.toString()}
-                </div>
-              </div>
-            );
-          })}
+            {isLoading && <div className="loading">Loading...</div>}
+
+            {allWaves
+              .sort((a, b) => b.timestamp - a.timestamp)
+              .map((wave, index) => {
+                return (
+                  <div key={index} className="waveContainer">
+                    <div>
+                      <span className="bold">Message:</span> {wave.message}
+                    </div>
+                    <div>
+                      <span className="bold">From:</span>{" "}
+                      <a
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        href={`https://rinkeby.etherscan.io/address/${wave.address}/`}
+                      >
+                        {wave.address}
+                      </a>
+                    </div>
+                    <div>
+                      <span className="bold">Time:</span>{" "}
+                      {wave.timestamp.toString()}
+                    </div>
+                  </div>
+                );
+              })}
+          </div>
+        )}
       </div>
     </div>
   );
