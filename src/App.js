@@ -9,7 +9,7 @@ export default function App() {
   const [messageValue, setMessageValue] = useState("");
   const [totalWaves, setTotalWaves] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
-  const contractAddress = "0x66b7Ef0E38059f9973BCC27e679Bba559659E008";
+  const contractAddress = "0xd7B771AD47371f77E0f0f93660B80EDfd9ed68cD";
   const contractABI = abi;
 
   const getAllWaves = async () => {
